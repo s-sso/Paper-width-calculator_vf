@@ -43,7 +43,7 @@ if isinstance(_pending_roll_edit, dict):
         st.session_state["_handled_roll_edit_nonce"] = _pending_nonce
 
 # -----------------------------------------------------------------------------
-# Theme / layout — compact header + isolated SVG renderer + TEST sequence control + standalone embedded in-roll width inputs + fixed expanded sidebar + reduced header and roll spacing; extended width arrows (v11 - remove blank top spaces)
+# Theme / layout — compact header + isolated SVG renderer + TEST sequence control + standalone embedded in-roll width inputs + fixed expanded sidebar + reduced header and roll spacing; extended width arrows (v14 - remove header flow spacer; first card 6px below header)
 # -----------------------------------------------------------------------------
 CSS = r"""
 <style>
@@ -54,7 +54,7 @@ CSS = r"""
 }
 html, body, [class*="css"] { font-family:'Noto Sans KR','Malgun Gothic',sans-serif; }
 .stApp { background:linear-gradient(180deg,#f4f7ff 0%,#ffffff 42%,#f8faff 100%); color:var(--ink); }
-header[data-testid="stHeader"] { background:transparent; }
+header[data-testid="stHeader"] { display:none !important; height:0 !important; }
 #MainMenu, footer { visibility:hidden; }
 [data-testid="stToolbar"] { visibility:hidden; height:0; }
 /* Keep the input sidebar permanently expanded: remove Streamlit's collapse control. */
@@ -71,7 +71,7 @@ section[data-testid="stSidebar"] {
   min-width:300px; max-width:300px;
 }
 section[data-testid="stSidebar"] > div { padding-top:0 !important; padding-block-start:0 !important; padding-bottom:.65rem !important; }
-section[data-testid="stMain"] > div { margin-top:0 !important; padding-top:0 !important; padding-block-start:0 !important; padding-left:1.05rem; padding-right:1.05rem; padding-bottom:.7rem !important; max-width:none; }
+section[data-testid="stMain"] > div { margin-top:0 !important; padding-top:0 !important; padding-left:1.05rem; padding-right:1.05rem; padding-bottom:.7rem !important; max-width:none; }
 section[data-testid="stMain"] .block-container { padding-top:.35rem !important; padding-bottom:.7rem !important; }
 section[data-testid="stSidebar"] [data-testid="stSidebarContent"] { padding-top:0 !important; padding-block-start:0 !important; }
 .global-header {
@@ -161,47 +161,78 @@ hr {border-color:#e7ecf5!important;}
  section[data-testid="stSidebar"] [data-testid="stSidebarContent"]{padding-top:0!important;padding-block-start:0!important}
 }
 
-/* v13: set the first summary-card block to a 6px top gap.
-   This also pulls every result section below it upward without moving the page background. */
-section[data-testid="stMain"] .block-container,
-section[data-testid="stMain"] [data-testid="stMainBlockContainer"] {
+/* v14: real layout fix — fixed header is CSS-only and occupies zero Streamlit flow height. */
+header[data-testid="stHeader"] {
+  display:none !important;
+  height:0 !important;
+  min-height:0 !important;
+  visibility:hidden !important;
+}
+body::before {
+  content:"";
+  position:fixed;
+  z-index:2147483000;
+  top:0; left:0; right:0;
+  height:68px;
+  background:linear-gradient(105deg,#1a2b55 0%,#2d416f 52%,#17264b 100%);
+  box-shadow:0 4px 18px rgba(18,35,76,.18);
+  pointer-events:none;
+}
+body::after {
+  content:"";
+  position:fixed;
+  z-index:2147483001;
+  top:0; left:0;
+  width:350px; height:68px;
+  background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNTAiIGhlaWdodD0iNjgiIHZpZXdCb3g9IjAgMCAzNTAgNjgiPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJwIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agc3RvcC1jb2xvcj0iI2ZmZiIvPjxzdG9wIG9mZnNldD0iLjU1IiBzdG9wLWNvbG9yPSIjZThlZGZhIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYWViYmQ3Ii8+PC9saW5lYXJHcmFkaWVudD4KPGxpbmVhckdyYWRpZW50IGlkPSJjIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMCI+PHN0b3Agc3RvcC1jb2xvcj0iI2QzZDllOCIvPjxzdG9wIG9mZnNldD0iLjUiIHN0b3AtY29sb3I9IiNmZmYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM4Nzk1YjUiLz48L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+CjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEwLDEpIHNjYWxlKC42MikiPgo8cGF0aCBkPSJNMTQgMzQgNjEgMTJRNzAgOCA3NyAxNGw5IDdROTEgMjUgODggMzRMNjcgNzNRNjMgODEgNTQgODRMMTcgNjlROCA2NSA5IDU1TDEwIDQzUTEwIDM3IDE0IDM0WiIgZmlsbD0idXJsKCNwKSIgc3Ryb2tlPSIjZjhmYmZmIiBzdHJva2Utd2lkdGg9IjIiLz4KPHBhdGggZD0iTTE5IDM3IDYxIDIwUTY4IDE3IDc1IDIyTDgyIDI3IDYwIDY1UTU2IDcyIDQ5IDczTDE4IDYxUTEzIDU5IDE0IDUyTDE0IDQ0UTE0IDQwIDE5IDM3WiIgZmlsbD0iI2Y4ZmJmZiIgb3BhY2l0eT0iLjkzIi8+CjxlbGxpcHNlIGN4PSIyNSIgY3k9IjUxIiByeD0iMTYiIHJ5PSIyMyIgdHJhbnNmb3JtPSJyb3RhdGUoLTE4IDI1IDUxKSIgZmlsbD0idXJsKCNjKSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjMiLz4KPGVsbGlwc2UgY3g9IjI1IiBjeT0iNTEiIHJ4PSI4IiByeT0iMTMiIHRyYW5zZm9ybT0icm90YXRlKC0xOCAyNSA1MSkiIGZpbGw9IiM3Nzg2YTciIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIzIi8+CjxwYXRoIGQ9Ik0yOCAzMSA2NiAxNk0zNyA3MSA2MSA3OCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjMiIG9wYWNpdHk9Ii45IiBmaWxsPSJub25lIi8+CjwvZz4KPHRleHQgeD0iODAiIHk9IjI4IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjMiIGZvbnQtd2VpZ2h0PSI5MDAiIGZpbGw9IiNmZmYiPuyngO2PrSDqtazshLEg6rOE7IKw6riwPC90ZXh0Pgo8dGV4dCB4PSI4MCIgeT0iNDgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMSIgZm9udC13ZWlnaHQ9IjYwMCIgZmlsbD0iI2UzZWFmZiI+7KCc7KeA7ZqM7IKsIOyngO2PrSDqtazshLEg7Iuc666s66CI7J207IWYPC90ZXh0Pgo8L3N2Zz4=");
+  background-repeat:no-repeat;
+  background-position:left top;
+  background-size:350px 68px;
+  pointer-events:none;
+}
+div[data-testid="stAppViewContainer"],
+.stAppViewContainer {
   padding-top:0 !important;
   padding-block-start:0 !important;
   margin-top:0 !important;
-  top:0 !important;
 }
-/* The custom header is fixed-position; collapse its Streamlit wrapper too.
-   The header remains visible, but its empty layout footprint is removed. */
-section[data-testid="stMain"] [data-testid="stElementContainer"]:has(.global-header) {
-  height:0 !important;
-  min-height:0 !important;
-  margin:0 !important;
-  padding:0 !important;
+/* Place the first summary card row exactly 6px below the 68px header. */
+section[data-testid="stMain"] {
+  margin-top:0 !important;
+  padding-top:0 !important;
 }
-section[data-testid="stMain"] [data-testid="stElementContainer"]:has(.global-header) [data-testid="stMarkdownContainer"] {
-  height:0 !important;
-  min-height:0 !important;
-  margin:0 !important;
-  padding:0 !important;
+section[data-testid="stMain"] [data-testid="stMainBlockContainer"],
+section[data-testid="stMain"] .block-container {
+  box-sizing:border-box !important;
+  padding-top:74px !important;
+  padding-block-start:74px !important;
+  margin-top:0 !important;
 }
 section[data-testid="stMain"] [data-testid="stHorizontalBlock"]:has(.summary-card) {
-  margin-top:6px !important;
+  margin-top:0 !important;
 }
+/* Keep the sidebar contents aligned just below the fixed 68px header. */
+section[data-testid="stSidebar"] [data-testid="stSidebarContent"],
 section[data-testid="stSidebar"] .block-container,
-section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
-  padding-top:0 !important;
-  padding-block-start:0 !important;
+section[data-testid="stSidebar"] [data-testid="stMainBlockContainer"] {
+  padding-top:78px !important;
+  padding-block-start:78px !important;
+  margin-top:0 !important;
 }
 section[data-testid="stSidebar"] .sidebar-title { margin-bottom:0 !important; }
 section[data-testid="stSidebar"] .first-sidebar-section { margin-top:0 !important; }
-/* The first sidebar heading is wrapped in a Streamlit element container;
-   reduce that wrapper's bottom spacing so the first input moves up too. */
-section[data-testid="stSidebar"] div[data-testid="stElementContainer"]:has(.sidebar-title) {
-  margin-bottom:0 !important;
-}
 @media(max-width:800px) {
-  section[data-testid="stMain"] [data-testid="stHorizontalBlock"]:has(.summary-card) {
-    margin-top:6px !important;
+  body::before { height:62px; }
+  body::after { height:62px; background-size:320px 62px; }
+  section[data-testid="stMain"] [data-testid="stMainBlockContainer"],
+  section[data-testid="stMain"] .block-container {
+    padding-top:68px !important;
+    padding-block-start:68px !important;
+  }
+  section[data-testid="stSidebar"] [data-testid="stSidebarContent"],
+  section[data-testid="stSidebar"] .block-container {
+    padding-top:72px !important;
+    padding-block-start:72px !important;
   }
 }
 
@@ -209,20 +240,9 @@ section[data-testid="stSidebar"] div[data-testid="stElementContainer"]:has(.side
 """
 st.markdown(CSS, unsafe_allow_html=True)
 
-HEADER = r"""
-<div class="global-header">
- <svg class="brand-icon" viewBox="0 0 100 100" aria-hidden="true">
-  <defs><linearGradient id="paper" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#fff"/><stop offset=".55" stop-color="#e8edfa"/><stop offset="1" stop-color="#aebbd7"/></linearGradient><linearGradient id="core" x1="0" x2="1"><stop stop-color="#d3d9e8"/><stop offset=".5" stop-color="#fff"/><stop offset="1" stop-color="#8795b5"/></linearGradient></defs>
-  <path d="M14 34 61 12Q70 8 77 14l9 7Q91 25 88 34L67 73Q63 81 54 84L17 69Q8 65 9 55L10 43Q10 37 14 34Z" fill="url(#paper)" stroke="#f8fbff" stroke-width="2"/>
-  <path d="M19 37 61 20Q68 17 75 22L82 27 60 65Q56 72 49 73L18 61Q13 59 14 52L14 44Q14 40 19 37Z" fill="#f8fbff" opacity=".93"/>
-  <ellipse cx="25" cy="51" rx="16" ry="23" transform="rotate(-18 25 51)" fill="url(#core)" stroke="#fff" stroke-width="3"/>
-  <ellipse cx="25" cy="51" rx="8" ry="13" transform="rotate(-18 25 51)" fill="#7786a7" stroke="#fff" stroke-width="3"/>
-  <path d="M28 31 66 16M37 71 61 78" stroke="#fff" stroke-width="3" opacity=".9" fill="none"/>
- </svg>
- <div><div class="brand-title">지폭 구성 계산기</div><div class="brand-sub">제지회사 지폭 구성 시뮬레이션</div></div>
-</div>
-"""
-st.markdown(HEADER, unsafe_allow_html=True)
+# The visual header is rendered by fixed body pseudo-elements in CSS.
+# It is intentionally not a Streamlit markdown element, so it reserves zero layout height.
+
 
 # Embedded component frontend: generated automatically in /tmp at runtime.
 # This keeps deployment to a single Python file; no separate roll_component folder is required.

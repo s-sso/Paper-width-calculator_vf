@@ -1,1 +1,1 @@
-Replace the existing GitHub streamlit_app.py with this version renamed to streamlit_app.py. Keep requirements.txt and packages.txt unchanged.
+Replace the repository's existing streamlit_app.py with the included streamlit_app.py. The header is rendered by CSS and no longer occupies Streamlit layout flow. Keep requirements.txt and packages.txt unchanged.
