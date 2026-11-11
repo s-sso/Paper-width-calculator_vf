@@ -161,14 +161,31 @@ hr {border-color:#e7ecf5!important;}
  section[data-testid="stSidebar"] [data-testid="stSidebarContent"]{padding-top:0!important;padding-block-start:0!important}
 }
 
-/* v11: remove the actual blank band directly below the fixed header */
+/* v13: set the first summary-card block to a 6px top gap.
+   This also pulls every result section below it upward without moving the page background. */
 section[data-testid="stMain"] .block-container,
 section[data-testid="stMain"] [data-testid="stMainBlockContainer"] {
   padding-top:0 !important;
   padding-block-start:0 !important;
   margin-top:0 !important;
-  position:relative !important;
-  top:-50px !important;
+  top:0 !important;
+}
+/* The custom header is fixed-position; collapse its Streamlit wrapper too.
+   The header remains visible, but its empty layout footprint is removed. */
+section[data-testid="stMain"] [data-testid="stElementContainer"]:has(.global-header) {
+  height:0 !important;
+  min-height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+section[data-testid="stMain"] [data-testid="stElementContainer"]:has(.global-header) [data-testid="stMarkdownContainer"] {
+  height:0 !important;
+  min-height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+section[data-testid="stMain"] [data-testid="stHorizontalBlock"]:has(.summary-card) {
+  margin-top:6px !important;
 }
 section[data-testid="stSidebar"] .block-container,
 section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
@@ -177,9 +194,15 @@ section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
 }
 section[data-testid="stSidebar"] .sidebar-title { margin-bottom:0 !important; }
 section[data-testid="stSidebar"] .first-sidebar-section { margin-top:0 !important; }
+/* The first sidebar heading is wrapped in a Streamlit element container;
+   reduce that wrapper's bottom spacing so the first input moves up too. */
+section[data-testid="stSidebar"] div[data-testid="stElementContainer"]:has(.sidebar-title) {
+  margin-bottom:0 !important;
+}
 @media(max-width:800px) {
-  section[data-testid="stMain"] .block-container,
-  section[data-testid="stMain"] [data-testid="stMainBlockContainer"] { top:-42px !important; }
+  section[data-testid="stMain"] [data-testid="stHorizontalBlock"]:has(.summary-card) {
+    margin-top:6px !important;
+  }
 }
 
 </style>
