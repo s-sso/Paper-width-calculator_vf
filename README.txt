@@ -1,1 +1,1 @@
-Replace the existing GitHub streamlit_app.py with this file renamed to streamlit_app.py. The custom HTML component is embedded; keep existing requirements.txt and packages.txt.
+Replace the existing GitHub streamlit_app.py with this version (rename the included file to streamlit_app.py). Keep requirements.txt and packages.txt unchanged.

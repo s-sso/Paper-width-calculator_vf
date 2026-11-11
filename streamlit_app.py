@@ -43,7 +43,7 @@ if isinstance(_pending_roll_edit, dict):
         st.session_state["_handled_roll_edit_nonce"] = _pending_nonce
 
 # -----------------------------------------------------------------------------
-# Theme / layout — compact header + isolated SVG renderer + TEST sequence control + standalone embedded in-roll width inputs + fixed expanded sidebar + reduced header and roll spacing; extended width arrows (v10)
+# Theme / layout — compact header + isolated SVG renderer + TEST sequence control + standalone embedded in-roll width inputs + fixed expanded sidebar + reduced header and roll spacing; extended width arrows (v11 - remove blank top spaces)
 # -----------------------------------------------------------------------------
 CSS = r"""
 <style>
@@ -70,10 +70,10 @@ section[data-testid="stSidebar"] {
   border-right:1px solid #dce4f7;
   min-width:300px; max-width:300px;
 }
-section[data-testid="stSidebar"] > div { padding-top:.35rem !important; padding-bottom:.65rem !important; }
-section[data-testid="stMain"] > div { margin-top:-92px !important; padding-top:.35rem !important; padding-left:1.05rem; padding-right:1.05rem; padding-bottom:.7rem !important; max-width:none; }
+section[data-testid="stSidebar"] > div { padding-top:0 !important; padding-block-start:0 !important; padding-bottom:.65rem !important; }
+section[data-testid="stMain"] > div { margin-top:0 !important; padding-top:0 !important; padding-block-start:0 !important; padding-left:1.05rem; padding-right:1.05rem; padding-bottom:.7rem !important; max-width:none; }
 section[data-testid="stMain"] .block-container { padding-top:.35rem !important; padding-bottom:.7rem !important; }
-section[data-testid="stSidebar"] [data-testid="stSidebarContent"] { padding-top:.35rem !important; }
+section[data-testid="stSidebar"] [data-testid="stSidebarContent"] { padding-top:0 !important; padding-block-start:0 !important; }
 .global-header {
   position:fixed; z-index:999999; top:0; left:0; width:100vw; height:68px;
   background:linear-gradient(105deg,#1a2b55 0%,#2d416f 52%,#17264b 100%);
@@ -83,7 +83,8 @@ section[data-testid="stSidebar"] [data-testid="stSidebarContent"] { padding-top:
 .brand-icon { width:48px; height:48px; margin-right:13px; flex:0 0 auto; }
 .brand-title { font-size:23px; line-height:1.12; font-weight:900; letter-spacing:-1.2px; color:#fff; white-space:nowrap; }
 .brand-sub { font-size:11px; margin-top:3px; color:#e3eaff; font-weight:500; white-space:nowrap; }
-.sidebar-title { font-size:22px; font-weight:900; color:#15254d; margin:0 0 18px 0; letter-spacing:-.7px; }
+.sidebar-title { font-size:22px; font-weight:900; color:#15254d; margin:0 0 0 0; letter-spacing:-.7px; }
+.first-sidebar-section { margin-top:0 !important; }
 .sidebar-section { font-size:17px; font-weight:800; color:#18264a; margin:16px 0 8px; }
 .sidebar-note {font-size:12px;color:#697792; line-height:1.5; margin-top:2px;}
 div[data-testid="stNumberInput"] label, div[data-testid="stRadio"] label {font-weight:650!important;color:#27375f!important;}
@@ -154,11 +155,33 @@ hr {border-color:#e7ecf5!important;}
 }
 @media(max-width:800px){
  .global-header{height:62px;padding:0 14px}.brand-title{font-size:21px}.brand-sub{font-size:10px}.brand-icon{width:42px;height:42px}
- section[data-testid="stMain"] > div{margin-top:-82px!important;padding-top:.35rem!important;padding-left:.55rem;padding-right:.55rem}
+ section[data-testid="stMain"] > div{margin-top:0!important;padding-top:0!important;padding-block-start:0!important;padding-left:.55rem;padding-right:.55rem}
  section[data-testid="stMain"] .block-container{padding-top:.35rem!important}
- section[data-testid="stSidebar"] > div{padding-top:.35rem!important}
- section[data-testid="stSidebar"] [data-testid="stSidebarContent"]{padding-top:.35rem!important}
+ section[data-testid="stSidebar"] > div{padding-top:0!important;padding-block-start:0!important}
+ section[data-testid="stSidebar"] [data-testid="stSidebarContent"]{padding-top:0!important;padding-block-start:0!important}
 }
+
+/* v11: remove the actual blank band directly below the fixed header */
+section[data-testid="stMain"] .block-container,
+section[data-testid="stMain"] [data-testid="stMainBlockContainer"] {
+  padding-top:0 !important;
+  padding-block-start:0 !important;
+  margin-top:0 !important;
+  position:relative !important;
+  top:-50px !important;
+}
+section[data-testid="stSidebar"] .block-container,
+section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
+  padding-top:0 !important;
+  padding-block-start:0 !important;
+}
+section[data-testid="stSidebar"] .sidebar-title { margin-bottom:0 !important; }
+section[data-testid="stSidebar"] .first-sidebar-section { margin-top:0 !important; }
+@media(max-width:800px) {
+  section[data-testid="stMain"] .block-container,
+  section[data-testid="stMain"] [data-testid="stMainBlockContainer"] { top:-42px !important; }
+}
+
 </style>
 """
 st.markdown(CSS, unsafe_allow_html=True)
@@ -388,7 +411,7 @@ def _sync_roll_general_to_manual(index: int) -> None:
 
 with st.sidebar:
     st.markdown('<div class="sidebar-title">⚙️ 입력 조건</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sidebar-section">전체 지폭 (고정)</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sidebar-section first-sidebar-section">전체 지폭 (고정)</div>', unsafe_allow_html=True)
     deckle = st.number_input("전체 지폭 (mm)", min_value=100.0, max_value=20000.0, value=4850.0, step=10.0, key="deckle", label_visibility="collapsed")
 
     st.markdown('<div class="sidebar-section">구성할 지폭 개수 (n)</div>', unsafe_allow_html=True)
