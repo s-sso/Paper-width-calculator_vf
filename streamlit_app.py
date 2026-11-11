@@ -43,7 +43,7 @@ if isinstance(_pending_roll_edit, dict):
         st.session_state["_handled_roll_edit_nonce"] = _pending_nonce
 
 # -----------------------------------------------------------------------------
-# Theme / layout — compact header + isolated SVG renderer + TEST sequence control + standalone embedded in-roll width inputs + fixed expanded sidebar + reduced header and roll spacing; extended width arrows (v14 - remove header flow spacer; first card 6px below header)
+# Theme / layout — compact header + isolated SVG renderer + TEST sequence control + standalone embedded in-roll width inputs + fixed expanded sidebar + reduced header and roll spacing; extended width arrows (v15 - reduce main and sidebar top whitespace only)
 # -----------------------------------------------------------------------------
 CSS = r"""
 <style>
@@ -196,7 +196,7 @@ div[data-testid="stAppViewContainer"],
   padding-block-start:0 !important;
   margin-top:0 !important;
 }
-/* Place the first summary card row exactly 6px below the 68px header. */
+/* v15: reduce the excessive main top gap (74px -> 40px); header stays 68px. */
 section[data-testid="stMain"] {
   margin-top:0 !important;
   padding-top:0 !important;
@@ -204,19 +204,19 @@ section[data-testid="stMain"] {
 section[data-testid="stMain"] [data-testid="stMainBlockContainer"],
 section[data-testid="stMain"] .block-container {
   box-sizing:border-box !important;
-  padding-top:74px !important;
-  padding-block-start:74px !important;
+  padding-top:40px !important;
+  padding-block-start:40px !important;
   margin-top:0 !important;
 }
 section[data-testid="stMain"] [data-testid="stHorizontalBlock"]:has(.summary-card) {
   margin-top:0 !important;
 }
-/* Keep the sidebar contents aligned just below the fixed 68px header. */
+/* v15: sidebar top padding reduced from 78px to 8px; menu begins right under header. */
 section[data-testid="stSidebar"] [data-testid="stSidebarContent"],
 section[data-testid="stSidebar"] .block-container,
 section[data-testid="stSidebar"] [data-testid="stMainBlockContainer"] {
-  padding-top:78px !important;
-  padding-block-start:78px !important;
+  padding-top:8px !important;
+  padding-block-start:8px !important;
   margin-top:0 !important;
 }
 section[data-testid="stSidebar"] .sidebar-title { margin-bottom:0 !important; }
@@ -226,13 +226,13 @@ section[data-testid="stSidebar"] .first-sidebar-section { margin-top:0 !importan
   body::after { height:62px; background-size:320px 62px; }
   section[data-testid="stMain"] [data-testid="stMainBlockContainer"],
   section[data-testid="stMain"] .block-container {
-    padding-top:68px !important;
-    padding-block-start:68px !important;
+    padding-top:34px !important;
+    padding-block-start:34px !important;
   }
   section[data-testid="stSidebar"] [data-testid="stSidebarContent"],
   section[data-testid="stSidebar"] .block-container {
-    padding-top:72px !important;
-    padding-block-start:72px !important;
+    padding-top:8px !important;
+    padding-block-start:8px !important;
   }
 }
 

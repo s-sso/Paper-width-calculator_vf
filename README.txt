@@ -1,1 +1,1 @@
-Replace the repository's existing streamlit_app.py with the included streamlit_app.py. The header is rendered by CSS and no longer occupies Streamlit layout flow. Keep requirements.txt and packages.txt unchanged.
+Replace the GitHub streamlit_app.py with this file renamed to streamlit_app.py. This version reduces the main top padding to 40px and sidebar top padding to 8px. Keep requirements.txt and packages.txt unchanged.
